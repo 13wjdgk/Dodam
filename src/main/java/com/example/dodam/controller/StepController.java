@@ -36,13 +36,13 @@ public class StepController {
     }
 
     @PutMapping("/enroll")
-    public @ResponseBody ResponseEntity changeOrder(@RequestBody StepChangeOrderDto dto){
+    public @ResponseBody ResponseEntity<String> changeOrder(@RequestBody StepChangeOrderDto dto){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Long userId = principalDetails.getUser().getId();
         stepService.changeOrder(userId, dto.getFirstOrder(), dto.getSecondOrder());
 
-        return new ResponseEntity<Long>(userId, HttpStatus.OK);
+        return new ResponseEntity<>("순서 변경 성공", HttpStatus.OK);
     }
 
     @GetMapping("/select")
@@ -51,23 +51,23 @@ public class StepController {
     }
 
     @PutMapping("/select")
-    public @ResponseBody ResponseEntity change(@RequestBody StepSelectDto dto){
+    public @ResponseBody ResponseEntity<String> change(@RequestBody StepSelectDto dto){
         stepService.changeStep(dto);
-        return new ResponseEntity<Integer>(dto.getStepId(), HttpStatus.OK);
+        return new ResponseEntity<>("단계 수정 성공", HttpStatus.OK);
     }
 
     @DeleteMapping("/select")
-    public @ResponseBody ResponseEntity delete(Integer stepId){
+    public @ResponseBody ResponseEntity<String> delete(Integer stepId){
         stepService.delete(stepId);
-        return new ResponseEntity<Integer>(stepId, HttpStatus.OK);
+        return new ResponseEntity<>("단계 삭제 성공", HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public @ResponseBody ResponseEntity add(@RequestBody StepAddDto dto){
+    public @ResponseBody ResponseEntity<String> add(@RequestBody StepAddDto dto){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Long userId = principalDetails.getUser().getId();
         Integer stepId = stepService.addStep(userId, dto);
-        return new ResponseEntity<Integer>(stepId, HttpStatus.OK);
+        return new ResponseEntity<>("단계 생성 성공", HttpStatus.CREATED);
     }
 }

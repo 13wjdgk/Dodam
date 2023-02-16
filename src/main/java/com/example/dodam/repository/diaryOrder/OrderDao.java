@@ -6,9 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.List;
-
-import static ch.qos.logback.core.joran.action.ActionConst.NULL;
 
 @Repository
 public class OrderDao {
@@ -114,10 +113,11 @@ public class OrderDao {
     }
 
     // 해당 userId를 갖는 주문조회
-    public GetOrderRes getOrder(int userId) {
+    public List<GetOrderRes> getOrder(int userId) {
         String getOrderQuery = "select * from diaryOrder where userId = ?"; // 해당 userId를 만족하는 주문을 조회하는 쿼리문
         int getOrderParams = userId;
-        return this.jdbcTemplate.queryForObject(getOrderQuery,
+        return this.jdbcTemplate.query(getOrderQuery,
+        //return Collections.singletonList(this.jdbcTemplate.queryForObject(getOrderQuery,
                 (rs, rowNum) -> new GetOrderRes(
                         //sql에서 필요한 변수들
                         rs.getInt("orderId"),

@@ -35,8 +35,8 @@ public class OrderProvider {
 
 
     // 해당 userId를 갖는 주문 조회
-    public GetOrderRes getOrder(int userId)  {
-            GetOrderRes getOrderRes = orderDao.getOrder(userId);
+    public List<GetOrderRes> getOrder(int userId)  {
+            List<GetOrderRes> getOrderRes= orderDao.getOrder(userId);
             return getOrderRes;
     }
 

@@ -60,30 +60,45 @@ public class OrderController {
     }
 
 
-     //주문 1개 조회
-     @ResponseBody
-     @GetMapping("/orders/{userId}")
-     public Object getOrder(@PathVariable("userId") int userId)  {
-         GetOrderRes getOrderRes = null;
-         getOrderRes = orderProvider.getOrder(userId);
-         if(getOrderRes.getIsDeleted().equals("Y")){  //삭제된 주문일 경우
-                BaseResponse baseResponse=new BaseResponse("이미 삭제된 주문");
-                 return baseResponse;
-             }
-             else{ //존재하는 주문일 경우='N'
-                return getOrderRes;
-             }
+    //userId로 주문조회
+    @ResponseBody
+    @GetMapping("/orders/{userId}")
+    public List<GetOrderRes> getOrder(@PathVariable("userId") int userId)  {
+
+        List<GetOrderRes> getOrderRes =  orderProvider.getOrder(userId);
+
+        for(int i=0; i<getOrderRes.size(); i++)
+        {
+            String isDeletedSign = getOrderRes.get(i).getIsDeleted();
+            if(isDeletedSign.equals("Y")){  //삭제된 주문일 경우
+                getOrderRes.remove(i);   //해당 데이터를 리스트에서 제외
+            }
+        } //for문 종료
+
+        //if(getOrderRes.size()==0){  //만약 출력할 주문이 없다면
+            //return null;  //아무것도 출력하지 않음
+        //}
+        //else {
+            return getOrderRes;  //나머지 출력=결국은 isDeleted값이 'N'인 경우만 출력됨
+        //}
     }
 
 
-    //상세주문 1개 조회
-
+    //orderId로 상세주문 1개 조회
     @ResponseBody
     @GetMapping("/orders-details/{orderId}")
     public Object getOrderDetail(@PathVariable("orderId") int orderId)  {
-        GetOrderDetailRes getOrderDetailRes = null;
-        getOrderDetailRes = orderProvider.getOrderDetail(orderId);
-        return getOrderDetailRes;
+
+        GetOrderRes getOrderRes2 = orderProvider.getOrder2(orderId);
+        String checkIsDeleted = getOrderRes2.getIsDeleted();
+        if (checkIsDeleted.equals("Y")) {  //삭제된 주문일 경우
+            BaseResponse baseResponse = new BaseResponse("이미 삭제된 주문");
+            return baseResponse;
+        } else { //존재하는 주문일 경우='N'
+            GetOrderDetailRes getOrderDetailRes = null;
+            getOrderDetailRes = orderProvider.getOrderDetail(orderId);
+            return getOrderDetailRes;
+        }
     }
 
 

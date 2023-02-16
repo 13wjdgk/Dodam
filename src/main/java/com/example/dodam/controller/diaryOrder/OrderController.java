@@ -22,7 +22,7 @@ public class OrderController {
     @Autowired
     public OrderController(OrderProvider orderProvider, OrderService orderService) {
         this.orderProvider = orderProvider;  //provider와 연결
-        this.orderService=orderService;      //*추가: service와 연결(원래는 provider하나에 service가 함께 있었는데 분리시켰기 때문에 추가)
+        this.orderService = orderService;      //*추가: service와 연결(원래는 provider하나에 service가 함께 있었는데 분리시켰기 때문에 추가)
     }
 
 
@@ -63,24 +63,17 @@ public class OrderController {
     //userId로 주문조회
     @ResponseBody
     @GetMapping("/orders/{userId}")
-    public List<GetOrderRes> getOrder(@PathVariable("userId") int userId)  {
+    public List<GetOrderRes> getOrder(@PathVariable("userId") int userId) {
 
-        List<GetOrderRes> getOrderRes =  orderProvider.getOrder(userId);
-
-        for(int i=0; i<getOrderRes.size(); i++)
-        {
-            String isDeletedSign = getOrderRes.get(i).getIsDeleted();
-            if(isDeletedSign.equals("Y")){  //삭제된 주문일 경우
+        List<GetOrderRes> getOrderRes = orderProvider.getOrder(userId);
+        for (int i = 0; i < getOrderRes.size(); i++) {
+            String isDeletedSign = getOrderRes.get(i).getIsDeleted().toString();
+            if (isDeletedSign.equals("Y")) {  //삭제된 주문일 경우
                 getOrderRes.remove(i);   //해당 데이터를 리스트에서 제외
+                i-=1;
             }
         } //for문 종료
-
-        //if(getOrderRes.size()==0){  //만약 출력할 주문이 없다면
-            //return null;  //아무것도 출력하지 않음
-        //}
-        //else {
-            return getOrderRes;  //나머지 출력=결국은 isDeleted값이 'N'인 경우만 출력됨
-        //}
+        return getOrderRes;  //나머지 출력=결국은 isDeleted값이 'N'인 경우만 출력됨
     }
 
 

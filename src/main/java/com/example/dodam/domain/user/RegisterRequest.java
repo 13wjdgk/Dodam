@@ -19,11 +19,14 @@ import org.springframework.web.multipart.MultipartFile;
 public class RegisterRequest {
 
     @Email
+    @NotBlank
     private String email;
     @NotBlank
     private String password;
     @NotBlank
     private String nickname;
+
+    @NotBlank
     private String phone;
     private LocalDate birthDate;
     private MultipartFile profileImage;

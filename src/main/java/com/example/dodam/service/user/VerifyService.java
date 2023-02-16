@@ -44,7 +44,7 @@ public class VerifyService {
         verification.setStatus(VERIFIED);
         log.debug("verification = {}", verification);
         repository.save(verification);
-        return new VerificationResponse("인증이 성공했습니다.", "");
+        return new VerificationResponse("인증이 성공했습니다.");
     }
 
     /**

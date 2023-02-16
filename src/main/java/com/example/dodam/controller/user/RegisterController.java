@@ -1,4 +1,4 @@
-package com.example.dodam.controller;
+package com.example.dodam.controller.user;
 
 import com.example.dodam.domain.sms.dto.SmsResponse;
 import com.example.dodam.domain.sms.dto.VerificationRequest;
@@ -11,6 +11,7 @@ import com.example.dodam.service.user.SmsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -49,13 +50,14 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> register(@ModelAttribute RegisterRequest request) throws IOException {
+    public Object register(@ModelAttribute RegisterRequest request) throws IOException {
         String imagePath = fileUploadService.storeFile(request.getProfileImage());
         request.setImagePath(imagePath);
         try {
             smsService.checkPhone(request.getPhone());
             request.setPassword(passwordEncoder.encode(request.getPassword()));
-            return ResponseEntity.ok(UserResponse.of(registerService.register(request)));
+            registerService.register(request);
+            return Map.of("result", "성공");
         } catch (Exception e) {
             fileUploadService.deleteFile(imagePath);
             throw e;
@@ -63,14 +65,14 @@ public class RegisterController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity<String> checkEmail(@RequestParam String email) {
+    public Object checkEmail(@RequestParam String email) {
         registerService.checkDuplicateEmail(email);
-        return ResponseEntity.ok(email);
+        return Map.of("result", "중복되지 않은 이메일입니다.");
     }
 
     @PostMapping("/nickname")
-    public ResponseEntity<String> checkNickname(@RequestParam String nickname) {
+    public Object checkNickname(@RequestParam String nickname) {
         registerService.checkDuplicateNickname(nickname);
-        return ResponseEntity.ok(nickname);
+        return Map.of("result", "중복되지 않은 닉네임입니다.");
     }
 }

@@ -10,6 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VerificationResponse {
-    private String message;
-    private String status;
+    private String result;
 }

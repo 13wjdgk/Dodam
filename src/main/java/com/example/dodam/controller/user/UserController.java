@@ -1,4 +1,4 @@
-package com.example.dodam.controller;
+package com.example.dodam.controller.user;
 
 import com.example.dodam.config.auth.PrincipalDetails;
 import com.example.dodam.domain.user.UpdateUserRequest;
@@ -8,6 +8,7 @@ import com.example.dodam.service.user.FileUploadService;
 import com.example.dodam.service.user.UserService;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -38,18 +39,19 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<UserResponse> updateUser(@ModelAttribute UpdateUserRequest request, Authentication authentication) throws IOException {
+    public Object updateUser(@ModelAttribute UpdateUserRequest request, Authentication authentication) throws IOException {
         User user = getPrincipalUser(authentication);
         String imagePath = fileUploadService.storeFile(request.getProfileImage());
         request.setImgPath(imagePath);
         fileUploadService.deleteFile(user.getImgPath());
-        return ResponseEntity.ok(UserResponse.of(userService.update(user.getEmail(), request)));
+        userService.update(user.getEmail(), request);
+        return Map.of("result", "성공");
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteUser(Authentication authentication) {
+    public Object deleteUser(Authentication authentication) {
         userService.delete(getPrincipalUser(authentication).getId());
-        return ResponseEntity.ok().build();
+        return Map.of("result", "성공");
     }
 
 
@@ -60,11 +62,11 @@ public class UserController {
     }
 
     @DeleteMapping("/images")
-    public ResponseEntity<Void> deleteImage(Authentication authentication) {
+    public Object deleteImage(Authentication authentication) {
         User user = getPrincipalUser(authentication);
         userService.deleteImage(user.getId());
         fileUploadService.deleteFile(user.getImgPath());
-        return ResponseEntity.ok().build();
+        return Map.of("result", "성공");
     }
 
     private User getPrincipalUser(Authentication authentication) {

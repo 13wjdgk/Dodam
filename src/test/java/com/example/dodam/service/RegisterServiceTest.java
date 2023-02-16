@@ -7,6 +7,7 @@ import com.example.dodam.common.exception.RegisterException;
 import com.example.dodam.domain.user.RegisterRequest;
 import com.example.dodam.domain.user.User;
 import com.example.dodam.repository.user.UserRepository;
+import com.example.dodam.service.user.RegisterService;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;

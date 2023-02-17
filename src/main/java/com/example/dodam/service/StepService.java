@@ -1,6 +1,6 @@
 package com.example.dodam.service;
 
-
+import com.example.dodam.config.auth.PrincipalDetails;
 import com.example.dodam.domain.user.User;
 import com.example.dodam.dto.StepAddDto;
 import com.example.dodam.dto.StepEnrollDto;
@@ -8,7 +8,10 @@ import com.example.dodam.dto.StepMainDto;
 import com.example.dodam.dto.StepSelectDto;
 import com.example.dodam.domain.Step;
 import com.example.dodam.repository.StepRepository;
+import com.example.dodam.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

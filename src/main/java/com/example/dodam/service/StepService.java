@@ -30,8 +30,8 @@ public class StepService {
     public StepMainDto getMainStep(User user) {
         LocalDate now = LocalDate.now();
         int dDay;
-        if(user.getStartAt()!= null)
-            dDay= (int) ChronoUnit.DAYS.between(LocalDate.from(user.getStartAt()),now);
+        if(user.getStartDate()!= null)
+            dDay= (int) ChronoUnit.DAYS.between(LocalDate.from(user.getStartDate()),now);
         else
             dDay = 0;
 
@@ -53,8 +53,8 @@ public class StepService {
 
     public StepEnrollDto getStepEnroll(User user) {
         LocalDate startDate = null;
-        if(user.getStartAt()!= null)
-            startDate = LocalDate.from(user.getStartAt());
+        if(user.getStartDate()!= null)
+            startDate = LocalDate.from(user.getStartDate());
         List<Step> stepAll = stepRepository.findAllByUserId(user.getId());
 
         return StepEnrollDto.builder()

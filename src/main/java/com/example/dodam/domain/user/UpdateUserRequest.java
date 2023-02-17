@@ -2,8 +2,6 @@ package com.example.dodam.domain.user;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +24,7 @@ public class UpdateUserRequest {
     private MultipartFile profileImage;
     private LocalDate birthDate;
     private LocalDateTime updateAt;
-    private LocalDateTime startAt;
+    private LocalDateTime startDate;
 
     public User toUser() {
         return User.builder()
@@ -38,7 +36,7 @@ public class UpdateUserRequest {
             .role(role)
             .birthDate(birthDate)
             .updateAt(updateAt)
-            .startAt(startAt)
+            .startDate(startDate)
             .build();
     }
 }

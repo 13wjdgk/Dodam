@@ -20,7 +20,7 @@ public class UserResponse {
     private String email;
     private String phone;
     private String nickname;
-    private LocalDateTime startAt;
+    private LocalDateTime startDate;
     private LocalDate birthDate;
     private String imgPath;
 
@@ -29,7 +29,7 @@ public class UserResponse {
             .email(user.getEmail())
             .phone(user.getPhone())
             .nickname(user.getNickname())
-            .startAt(user.getStartAt())
+            .startDate(user.getStartDate())
             .birthDate(user.getBirthDate())
             .imgPath(user.getImgPath())
             .build();

@@ -1,6 +1,5 @@
 package com.example.dodam.service;
 
-import com.example.dodam.config.auth.PrincipalDetails;
 import com.example.dodam.domain.user.User;
 import com.example.dodam.dto.StepAddDto;
 import com.example.dodam.dto.StepEnrollDto;
@@ -8,10 +7,7 @@ import com.example.dodam.dto.StepMainDto;
 import com.example.dodam.dto.StepSelectDto;
 import com.example.dodam.domain.Step;
 import com.example.dodam.repository.StepRepository;
-import com.example.dodam.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +25,7 @@ public class StepService {
 
     public StepMainDto getMainStep(User user) {
         LocalDate now = LocalDate.now();
-        int dDay = (int) ChronoUnit.DAYS.between(LocalDate.from(user.getStartAt()),now);
+        int dDay = (int) ChronoUnit.DAYS.between(LocalDate.from(user.getStartDate()),now);
 
         List<Step> stepAll = stepRepository.findAllByUserId(user.getId());
         List<String> nowStep = new ArrayList<>();
@@ -49,7 +45,7 @@ public class StepService {
     }
 
     public StepEnrollDto getStepEnroll(User user) {
-        LocalDate startDate = LocalDate.from(user.getStartAt());
+        LocalDate startDate = LocalDate.from(user.getStartDate());
         List<Step> stepAll = stepRepository.findAllByUserId(user.getId());
 
         return StepEnrollDto.builder()

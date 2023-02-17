@@ -6,12 +6,15 @@ import com.example.dodam.dto.*;
 import com.example.dodam.domain.Step;
 import com.example.dodam.service.StepService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
+@Slf4j
 @RestController
 @RequestMapping("/step")
 @RequiredArgsConstructor
@@ -20,29 +23,23 @@ public class StepController {
     private final StepService stepService;
 
     @GetMapping("/main")
-    public StepMainDto main(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        User user = principalDetails.getUser();
+    public StepMainDto main(Authentication authentication) {
+        User user = getPrincipalUser(authentication);
         return stepService.getMainStep(user);
     }
 
     @GetMapping("/enroll")
-    public StepEnrollDto getStepEnroll() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        User user = principalDetails.getUser();
+    public StepEnrollDto getStepEnroll(Authentication authentication) {
+        User user = getPrincipalUser(authentication);
         return stepService.getStepEnroll(user);
     }
 
     @PutMapping("/enroll")
-    public @ResponseBody ResponseEntity<String> changeOrder(@RequestBody StepChangeOrderDto dto){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        Long userId = principalDetails.getUser().getId();
+    public @ResponseBody ResponseEntity<Object> changeOrder(@RequestBody StepChangeOrderDto dto,Authentication authentication){
+        User user = getPrincipalUser(authentication);
+        Long userId = user.getId();
         stepService.changeOrder(userId, dto.getFirstOrder(), dto.getSecondOrder());
-
-        return new ResponseEntity<>("순서 변경 성공", HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("result", "순서 변경 성공"), HttpStatus.OK);
     }
 
     @GetMapping("/select")
@@ -51,23 +48,27 @@ public class StepController {
     }
 
     @PutMapping("/select")
-    public @ResponseBody ResponseEntity<String> change(@RequestBody StepSelectDto dto){
+    public @ResponseBody ResponseEntity<Object> change(@RequestBody StepSelectDto dto){
         stepService.changeStep(dto);
-        return new ResponseEntity<>("단계 수정 성공", HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("result", "단계 수정 성공"), HttpStatus.OK);
     }
 
     @DeleteMapping("/select")
-    public @ResponseBody ResponseEntity<String> delete(Integer stepId){
+    public @ResponseBody ResponseEntity<Object> delete(Integer stepId){
         stepService.delete(stepId);
-        return new ResponseEntity<>("단계 삭제 성공", HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("result", "단계 삭제 성공"), HttpStatus.OK);
     }
 
-    @PostMapping("/")
-    public @ResponseBody ResponseEntity<String> add(@RequestBody StepAddDto dto){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        Long userId = principalDetails.getUser().getId();
-        Integer stepId = stepService.addStep(userId, dto);
-        return new ResponseEntity<>("단계 생성 성공", HttpStatus.CREATED);
+    @PostMapping("")
+    public @ResponseBody ResponseEntity<Object> add(@RequestBody StepAddDto dto,Authentication authentication){
+        User user = getPrincipalUser(authentication);
+        Long userId = user.getId();
+        stepService.addStep(userId, dto);
+        return new ResponseEntity<>(Map.of("result", "단계 생성 성공"), HttpStatus.CREATED);
+    }
+
+    private User getPrincipalUser(Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return principal.getUser();
     }
 }

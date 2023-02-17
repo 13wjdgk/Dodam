@@ -1,6 +1,6 @@
 package com.example.dodam.service;
 
-import com.example.dodam.config.auth.PrincipalDetails;
+
 import com.example.dodam.domain.user.User;
 import com.example.dodam.dto.StepAddDto;
 import com.example.dodam.dto.StepEnrollDto;
@@ -8,10 +8,7 @@ import com.example.dodam.dto.StepMainDto;
 import com.example.dodam.dto.StepSelectDto;
 import com.example.dodam.domain.Step;
 import com.example.dodam.repository.StepRepository;
-import com.example.dodam.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +26,18 @@ public class StepService {
 
     public StepMainDto getMainStep(User user) {
         LocalDate now = LocalDate.now();
-        int dDay = (int) ChronoUnit.DAYS.between(LocalDate.from(user.getStartAt()),now);
+        int dDay;
+        if(user.getStartAt()!= null)
+            dDay= (int) ChronoUnit.DAYS.between(LocalDate.from(user.getStartAt()),now);
+        else
+            dDay = 0;
 
         List<Step> stepAll = stepRepository.findAllByUserId(user.getId());
         List<String> nowStep = new ArrayList<>();
 
-        for(int i=0; i<stepAll.size(); i++){
-            if(stepAll.get(i).getStartDate().compareTo(now) <= 0 && stepAll.get(i).getEndDate().compareTo(now) >= 0){
-                nowStep.add(stepAll.get(i).getStepName());
-            }
+        for (Step step : stepAll) {
+            if (step.getStartDate().compareTo(now) <= 0 && step.getEndDate().compareTo(now) >= 0)
+                nowStep.add(step.getStepName());
         }
 
         return StepMainDto.builder()
@@ -49,7 +49,9 @@ public class StepService {
     }
 
     public StepEnrollDto getStepEnroll(User user) {
-        LocalDate startDate = LocalDate.from(user.getStartAt());
+        LocalDate startDate = null;
+        if(user.getStartAt()!= null)
+            startDate = LocalDate.from(user.getStartAt());
         List<Step> stepAll = stepRepository.findAllByUserId(user.getId());
 
         return StepEnrollDto.builder()

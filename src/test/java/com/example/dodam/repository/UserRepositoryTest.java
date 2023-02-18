@@ -72,7 +72,7 @@ class UserRepositoryTest {
     @ParameterizedTest
     void update(User user, UpdateUserRequest userDto) {
         User savedUser = userRepository.save(user);
-        userRepository.Update(user.getId(), userDto.toUser());
+        userRepository.update(user.getId(), userDto.toUser());
         User updatedUser = userRepository.findById(savedUser.getId()).get();
         assertThat(updatedUser.getUpdateAt()).isNotNull();
         updatedUser.setUpdateAt(null);
@@ -110,13 +110,8 @@ class UserRepositoryTest {
             Arguments.arguments(
                 User.builder().email("test@naver.com").nickname("test").role("ROLE_USER")
                         .phone("01012345678").password("123").status("A").build(),
-                UpdateUserRequest.builder().email("test@naver.com").nickname("tester").role("ROLE_USER")
+                UpdateUserRequest.builder().nickname("tester").role("ROLE_USER")
                     .phone("01000000000").password("1234").status("A").build()
-            ),
-            Arguments.arguments(
-                User.builder().email("test@naver.com").nickname("test").role("ROLE_USER")
-                    .phone("01012345678").password("123").status("A").build(),
-                UpdateUserRequest.builder().email("hello@naver.com").build()
             )
         );
     }

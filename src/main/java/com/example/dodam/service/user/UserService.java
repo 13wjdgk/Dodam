@@ -22,7 +22,7 @@ public class UserService {
     public User update(String email, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
-        return userRepository.Update(user.getId(), updateUserRequest.toUser());
+        return userRepository.update(user.getId(), updateUserRequest.toUser());
     }
 
     public void delete(Long userId) {

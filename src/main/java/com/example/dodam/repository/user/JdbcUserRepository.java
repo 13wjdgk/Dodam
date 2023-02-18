@@ -86,7 +86,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     @Transactional
-    public User Update(Long id, User user) {
+    public User update(Long id, User user) {
         user.setUpdateAt(LocalDateTime.now());
         QueryGenerator<User> generator = new QueryGenerator<>(user);
         String sql = generator.generateDynamicUpdateQuery(TABLE, "where id = :id");

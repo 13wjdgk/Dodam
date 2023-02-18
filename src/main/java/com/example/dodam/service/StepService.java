@@ -1,6 +1,5 @@
 package com.example.dodam.service;
 
-import com.example.dodam.config.auth.PrincipalDetails;
 import com.example.dodam.domain.user.User;
 import com.example.dodam.dto.StepAddDto;
 import com.example.dodam.dto.StepEnrollDto;
@@ -9,9 +8,10 @@ import com.example.dodam.dto.StepSelectDto;
 import com.example.dodam.domain.Step;
 import com.example.dodam.repository.StepRepository;
 import com.example.dodam.repository.user.UserRepository;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,7 @@ import java.util.List;
 public class StepService {
 
     private final StepRepository stepRepository;
+    private final UserRepository userRepository;
 
     public StepMainDto getMainStep(User user) {
         LocalDate now = LocalDate.now();
@@ -89,6 +90,10 @@ public class StepService {
 
     public int addStep(Long userId, StepAddDto dto) {
         Long order = stepRepository.countStepByUserId(userId);
+        User user = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
+        if (user.getStartDate() == null) {
+            userRepository.update(userId, User.builder().startDate(LocalDateTime.now()).build());
+        }
         Step step = Step.builder()
                 .userId(userId)
                 .stepName(dto.getStepName())

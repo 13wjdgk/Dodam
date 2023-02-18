@@ -26,9 +26,9 @@ class QueryGeneratorTest {
     private static Stream<Arguments> generateUpdateQueryTestArguments() {
         return Stream.of(
             Arguments.arguments(
-                "UPDATE user SET email=:email, password=:password, phone=:phone, nickname=:nickname, "
+                "UPDATE user SET password=:password, phone=:phone, nickname=:nickname, "
                     + "status=:status, role=:role where id = :id",
-                UpdateUserRequest.builder().email("test@naver.com").nickname("test").role("ROLE_USER")
+                UpdateUserRequest.builder().nickname("test").role("ROLE_USER")
                     .phone("01000000000").password("123").status("A").build()
             )
         );

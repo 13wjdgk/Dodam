@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,5 +103,9 @@ public class StepService {
                 .stepOrder(Math.toIntExact(order)).build();
         stepRepository.save(step);
         return step.getStepId();
+    }
+
+    public void setStartDate(LocalDateTime startDate, Long userId) {
+        userRepository.updateStartDate(userId, startDate);
     }
 }

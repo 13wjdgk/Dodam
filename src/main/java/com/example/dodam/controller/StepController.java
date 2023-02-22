@@ -7,11 +7,13 @@ import com.example.dodam.domain.Step;
 import com.example.dodam.service.StepService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Slf4j
@@ -42,6 +44,13 @@ public class StepController {
         return new ResponseEntity<>(Map.of("result", "순서 변경 성공"), HttpStatus.OK);
     }
 
+    @PutMapping("/startDate/{startDate}")
+    public @ResponseBody ResponseEntity<Object> setStartDate(@PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, Authentication authentication){
+        User user = getPrincipalUser(authentication);
+        stepService.setStartDate(startDate.atStartOfDay(),user.getId());
+        return new ResponseEntity<>(Map.of("result", "시작 날짜 설정 성공"), HttpStatus.OK);
+    }
+
     @GetMapping("/select")
     public Step getStep(Integer stepId){
         return stepService.getStep(stepId);
@@ -53,8 +62,8 @@ public class StepController {
         return new ResponseEntity<>(Map.of("result", "단계 수정 성공"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/select")
-    public @ResponseBody ResponseEntity<Object> delete(Integer stepId){
+    @DeleteMapping("/select/{stepId}")
+    public @ResponseBody ResponseEntity<Object> delete(@PathVariable Integer stepId){
         stepService.delete(stepId);
         return new ResponseEntity<>(Map.of("result", "단계 삭제 성공"), HttpStatus.OK);
     }

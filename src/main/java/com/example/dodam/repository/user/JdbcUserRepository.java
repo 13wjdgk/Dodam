@@ -3,7 +3,9 @@ package com.example.dodam.repository.user;
 import com.example.dodam.domain.user.User;
 
 import com.example.dodam.utils.QueryGenerator;
+
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -18,10 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -125,6 +124,15 @@ public class JdbcUserRepository implements UserRepository {
     public void deleteImage(Long userId) {
         String sql = "UPDATE USER SET imgPath = null where id = :id";
         Map<String, Object> param = Map.of("id", userId);
+        template.update(sql, param);
+    }
+
+    @Override
+    public void updateStartDate(Long userId, LocalDateTime startDate) {
+        String sql = "UPDATE USER SET startDate = :startDate where id = :id";
+        Map<String,Object> param = new HashMap<>();
+        param.put("id",userId);
+        param.put("startDate",startDate);
         template.update(sql, param);
     }
 

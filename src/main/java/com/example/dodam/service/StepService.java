@@ -1,6 +1,5 @@
 package com.example.dodam.service;
 
-import com.example.dodam.config.auth.PrincipalDetails;
 import com.example.dodam.domain.user.User;
 import com.example.dodam.dto.StepAddDto;
 import com.example.dodam.dto.StepEnrollDto;
@@ -10,12 +9,11 @@ import com.example.dodam.domain.Step;
 import com.example.dodam.repository.StepRepository;
 import com.example.dodam.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,7 @@ import java.util.List;
 public class StepService {
 
     private final StepRepository stepRepository;
+    private final UserRepository userRepository;
 
     public StepMainDto getMainStep(User user) {
         LocalDate now = LocalDate.now();
@@ -97,5 +96,9 @@ public class StepService {
                 .stepOrder(Math.toIntExact(order)).build();
         stepRepository.save(step);
         return step.getStepId();
+    }
+
+    public void setStartDate(LocalDateTime startDate, Long userId) {
+        userRepository.updateStartDate(userId, startDate);
     }
 }

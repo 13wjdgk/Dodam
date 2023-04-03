@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.dodam.config.auth.PrincipalDetails;
 import com.example.dodam.domain.login.LoginRequestDto;
+import com.example.dodam.domain.user.LoginResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +24,8 @@ import java.util.Date;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
 	private final AuthenticationManager authenticationManager;
-	
+	private ObjectMapper mapper = new ObjectMapper();
+
 	// Authentication 객체 만들어서 리턴 => 의존 : AuthenticationManager
 	// 인증 요청시에 실행되는 함수 => /login
 	@Override
@@ -50,7 +52,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 						loginRequestDto.getPassword());
 		
 		System.out.println("JwtAuthenticationFilter : 토큰생성완료");
-		
 		// authenticate() 함수가 호출 되면 인증 프로바이더가 유저 디테일 서비스의
 		// loadUserByUsername(토큰의 첫번째 파라메터) 를 호출하고
 		// UserDetails를 리턴받아서 토큰의 두번째 파라메터(credential)과
@@ -62,7 +63,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		// 결론은 인증 프로바이더에게 알려줄 필요가 없음.
 		Authentication authentication = 
 				authenticationManager.authenticate(authenticationToken);
-		
 		PrincipalDetails principalDetailis = (PrincipalDetails) authentication.getPrincipal();
 		System.out.println("Authentication : "+principalDetailis.getUser().getEmail());
 		return authentication;
@@ -72,17 +72,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		
+
 		PrincipalDetails principalDetailis = (PrincipalDetails) authResult.getPrincipal();
-		
+
 		String jwtToken = JWT.create()
 				.withSubject(principalDetailis.getUsername())
-				.withExpiresAt(new Date(System.currentTimeMillis()+JwtProperties.EXPIRATION_TIME))
+				.withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
 				.withClaim("id", principalDetailis.getUser().getId())
 				.withClaim("username", principalDetailis.getUser().getEmail())
 				.sign(Algorithm.HMAC512(JwtProperties.SECRET));
-		
-		response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+jwtToken);
+
+		LoginResponse loginResponse = new LoginResponse();
+		loginResponse.setUserId(principalDetailis.getUser().getId());
+		System.out.println(principalDetailis.getUser().getId());
+		String result = mapper.writeValueAsString(loginResponse);
+
+		response.setContentType("application/json");
+		response.setCharacterEncoding("utf-8");
+		response.getWriter().write(result);
+		response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
 	}
-	
 }
